@@ -8,7 +8,7 @@ import { ProductModule } from './modules/product/product.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import devConfig from './config/env/dev.config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Admin, adminSchema, Seller, sellerSchema, User, UserSchema } from './models';
+import { UserMongoModule } from './shared';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -19,16 +19,7 @@ import { Admin, adminSchema, Seller, sellerSchema, User, UserSchema } from './mo
     useFactory: (configService: ConfigService) => ({
       uri: configService.get('db').url,
     }),
-  }),MongooseModule.forFeature([{ name: User.name, schema: UserSchema,discriminators:[
-    {
-      name: Admin.name,
-      schema: adminSchema,
-    },
-    {
-      name: Seller.name,
-      schema: sellerSchema,
-    }
-  ] }]),AuthModule, BrandModule, CategoryModule, ProductModule],
+  }),UserMongoModule,AuthModule, BrandModule, CategoryModule, ProductModule],
   controllers: [AppController],
   providers: [AppService],
 })

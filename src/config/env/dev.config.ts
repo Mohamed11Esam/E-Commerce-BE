@@ -11,4 +11,6 @@ export default () => ({
     url: process.env.CLOUD_URL,
     apiKey: process.env.CLOUD_API_KEY,
   },
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASS: process.env.EMAIL_PASS,
 });

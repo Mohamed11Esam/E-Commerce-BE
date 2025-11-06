@@ -10,6 +10,12 @@ export class User{
     password:string;
     @Prop({type:String,required:true,unique:true})
     email:string;
+    @Prop({type:String})
+    otp:string;
+    @Prop({type:Date})
+    otpExpiration:Date;
+    @Prop({type:Boolean,default:false})
+    isVerified:boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

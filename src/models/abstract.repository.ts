@@ -8,7 +8,7 @@ export abstract class AbstractRepository<T> {
     return doc.save();
   }
 
-  async getOne( filter: RootFilterQuery<T>, projection: ProjectionType<T>, options : QueryOptions ) {
+  async findOne( filter: RootFilterQuery<T>, projection: ProjectionType<T>, options : QueryOptions ) {
     return this.model.findOne(filter, projection, options);
   }
 

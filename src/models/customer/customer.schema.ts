@@ -9,6 +9,9 @@ export class Customer{
     userName:string;
     password:string;
     email:string;
+    otp:string;
+    otpExpiration:Date;
+    isVerified:boolean;
     @Prop({type:Date})
     dob:Date; 
 }

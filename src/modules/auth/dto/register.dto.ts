@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsDate, IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsDate, IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 export class RegisterDto {
     @IsString()
     @IsNotEmpty()
@@ -18,4 +18,16 @@ export class RegisterDto {
     @Transform(({ value }) => {return new Date(value)})
     @IsDate()
     dob: Date;
+
+    @IsOptional()
+    @IsString()
+    otp: string;
+
+    @IsOptional()
+    @IsDate()
+    otpExpiration: Date;
+
+    @IsOptional()
+    @IsBoolean()
+    isVerified: boolean;
 }

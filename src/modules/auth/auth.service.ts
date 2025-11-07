@@ -9,7 +9,7 @@ import { CustomerRepository } from '../../models';
 import { CustomerEntity } from './entities/auth.entity';
 import { sendMailHelper } from '@common/helpers';
 import { LoginDto } from './dto/login.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { OAuth2Client } from 'google-auth-library';
@@ -163,5 +163,59 @@ export class AuthService {
       JSON.stringify(user),
     );
     return { user: safeUser as CustomerEntity, token };
+  }
+
+  // send OTP for forgot password
+  async forgotPassword(email: string) {
+    const customer = await this.customerRepository.findOne({ email }, {}, {});
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+    const otpExpiration = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    await this.customerRepository.update(
+      { _id: customer._id },
+      { otp, otpExpiration },
+      {},
+    );
+
+    await sendMailHelper({
+      to: customer.email,
+      subject: 'Password reset OTP',
+      html: `<p>Your password reset OTP is <strong>${otp}</strong>. It expires in 15 minutes.</p>`,
+    });
+
+    return { message: 'OTP sent to email' };
+  }
+
+  // verify OTP and set new password
+  async resetPassword(email: string, otp: string, newPassword: string) {
+    const customer = await this.customerRepository.findOne({ email }, {}, {});
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    if (!customer.otp || !customer.otpExpiration) {
+      throw new BadRequestException('No OTP set for this account');
+    }
+
+    if (String(customer.otp) !== String(otp)) {
+      throw new BadRequestException('Invalid OTP');
+    }
+
+    if (new Date() > new Date(customer.otpExpiration)) {
+      throw new BadRequestException('OTP expired');
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await this.customerRepository.update(
+      { _id: customer._id },
+      { password: hashed, otp: '', otpExpiration: new Date(0) },
+      {},
+    );
+
+    return { message: 'Password updated successfully' };
   }
 }

@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import devConfig from './config/env/dev.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserMongoModule } from './shared';
+import { CustomerModule } from './modules/customer/customer.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -19,7 +20,7 @@ import { UserMongoModule } from './shared';
     useFactory: (configService: ConfigService) => ({
       uri: configService.get('db').url,
     }),
-  }),UserMongoModule,AuthModule, BrandModule, CategoryModule, ProductModule],
+  }),UserMongoModule,AuthModule, BrandModule, CategoryModule, ProductModule, CustomerModule],
   controllers: [AppController],
   providers: [AppService],
 })

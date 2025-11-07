@@ -1,4 +1,4 @@
-import { Model, ProjectionType, QueryOptions, RootFilterQuery } from 'mongoose';
+import { Model, MongooseUpdateQueryOptions, ProjectionType, QueryOptions, RootFilterQuery } from 'mongoose';
 
 export abstract class AbstractRepository<T> {
   constructor(protected readonly model: Model<T>) {}
@@ -8,8 +8,11 @@ export abstract class AbstractRepository<T> {
     return doc.save();
   }
 
-  async findOne( filter: RootFilterQuery<T>, projection: ProjectionType<T>, options : QueryOptions ) {
+  async findOne( filter: RootFilterQuery<T>, projection?: ProjectionType<T>, options? : QueryOptions ) {
     return this.model.findOne(filter, projection, options);
+  }
+  async update( filter: RootFilterQuery<T>, updateData: Partial<T>, options?: MongooseUpdateQueryOptions ) {
+    return this.model.updateOne(filter, updateData, options);
   }
 
 }

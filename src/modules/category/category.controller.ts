@@ -43,13 +43,21 @@ export class CategoryController {
   @Get()
   async findAll() {
     const categories = await this.categoryService.findAll();
-    return { success: true, message: 'Categories fetched successfully', data: categories };
+    return {
+      success: true,
+      message: 'Categories fetched successfully',
+      data: categories,
+    };
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const category = await this.categoryService.findOne(id);
-    return { success: true, message: 'Category fetched successfully', data: category };
+    return {
+      success: true,
+      message: 'Category fetched successfully',
+      data: category,
+    };
   }
 
   @Put(':id')
@@ -58,7 +66,11 @@ export class CategoryController {
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
     const updated = await this.categoryService.update(id, updateCategoryDto);
-    return { success: true, message: 'Category updated successfully', data: updated };
+    return {
+      success: true,
+      message: 'Category updated successfully',
+      data: updated,
+    };
   }
 
   @Delete(':id')

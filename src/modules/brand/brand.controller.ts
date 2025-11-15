@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
@@ -8,13 +16,20 @@ import { BrandFactory } from './factory';
 @Controller('brand')
 @Auth(['Admin'])
 export class BrandController {
-  constructor(private readonly brandService: BrandService, private readonly brandFactory: BrandFactory) {}
+  constructor(
+    private readonly brandService: BrandService,
+    private readonly brandFactory: BrandFactory,
+  ) {}
 
   @Post()
   async create(@Body() createBrandDto: CreateBrandDto, @User() user: any) {
     const brand = this.brandFactory.createBrand(createBrandDto, user);
     const created = await this.brandService.create(brand as any);
-    return { success: true, message: 'Brand created successfully', data: created };
+    return {
+      success: true,
+      message: 'Brand created successfully',
+      data: created,
+    };
   }
 
   @Get()
@@ -28,9 +43,16 @@ export class BrandController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateBrandDto: UpdateBrandDto,
+  ) {
     const updated = await this.brandService.update(id, updateBrandDto);
-    return { success: true, message: 'Brand updated successfully', data: updated };
+    return {
+      success: true,
+      message: 'Brand updated successfully',
+      data: updated,
+    };
   }
 
   @Delete(':id')

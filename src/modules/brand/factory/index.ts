@@ -8,7 +8,11 @@ export class BrandFactory {
   createBrand(createBrandDto: CreateBrandDto, user: any) {
     const brand = new Brand();
     brand.name = (createBrandDto as any).name;
-    brand.slug = slugify((createBrandDto as any).name, { lower: true, replacement: '-', trim: true });
+    brand.slug = slugify((createBrandDto as any).name, {
+      lower: true,
+      replacement: '-',
+      trim: true,
+    });
     brand.logo = (createBrandDto as any).logo;
     brand.createdBy = user?._id;
     return brand;

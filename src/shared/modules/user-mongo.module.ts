@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { Admin, AdminRepository, adminSchema, Customer, CustomerRepository, customerSchema, Seller, SellerRepository, sellerSchema, User, UserSchema } from "src/models";
+import { Admin, AdminRepository, adminSchema, Customer, CustomerRepository, customerSchema, Seller, SellerRepository, sellerSchema, User, UserRepository, UserSchema } from "src/models";
 
 @Module({
   imports: [
@@ -13,12 +13,14 @@ import { Admin, AdminRepository, adminSchema, Customer, CustomerRepository, cust
   providers: [
     AdminRepository,
     SellerRepository,
-    CustomerRepository
+    CustomerRepository,
+    UserRepository
   ],
   exports:[
     AdminRepository,
     SellerRepository,
-    CustomerRepository
+    CustomerRepository,
+    UserRepository
   ]
 })
 export class UserMongoModule {}

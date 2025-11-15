@@ -1,34 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ConfigService } from '@nestjs/config';
-import { AdminRepository, CustomerRepository, SellerRepository } from '@models/index';
+import { productRepository } from './../../models/product/product.repository';
+import { Product } from './entities/product.entity';
+import { CategoryService } from './../category/category.service';
+import { BrandService } from '@modules/brand/brand.service';
+import { MessageConstant } from '@common/constant';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class ProductService {
   constructor(
-    private readonly configService: ConfigService,
-    private readonly sellerRepository: SellerRepository,
-    private readonly adminRepository: AdminRepository,
-    private readonly customerRepository: CustomerRepository,
+    private readonly productRepository: productRepository,
+    private readonly categoryService: CategoryService,
+    private readonly brandService: BrandService,
   ) {}
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+   async create(product: Product ) {
+    //check if brand exists and category exists
+    await this.brandService.findOne((product as any).brandId);
+    await this.categoryService.findOne((product as any).categoryId);
+    return await this.productRepository.create(product);
+  }
+  async findAll() {
+    return await this.productRepository.find({}, {}, {});
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findOne(id: string) {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('Invalid product id');
+    const product = await this.productRepository.findOne({ _id: new Types.ObjectId(id) }, {}, {});
+    if (!product) throw new NotFoundException('Product not found');
+    return product;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('Invalid product id');
+    const existing = await this.productRepository.findOne({ _id: new Types.ObjectId(id) }, {}, {});
+    if (!existing) throw new NotFoundException('Product not found');
+    await this.productRepository.update({ _id: new Types.ObjectId(id) }, updateProductDto, {});
+    return await this.productRepository.findOne({ _id: new Types.ObjectId(id) }, {}, {});
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string) {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('Invalid product id');
+    const existing = await this.productRepository.findOne({ _id: new Types.ObjectId(id) }, {}, {});
+    if (!existing) throw new NotFoundException('Product not found');
+    await this.productRepository.delete({ _id: new Types.ObjectId(id) });
+    return { success: true, message: MessageConstant.Product.deletedSuccess };
   }
 }

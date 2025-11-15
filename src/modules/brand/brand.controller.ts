@@ -1,34 +1,40 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
+import { Auth, User } from '@common/decorators';
+import { BrandFactory } from './factory';
 
 @Controller('brand')
+@Auth(['Admin'])
 export class BrandController {
-  constructor(private readonly brandService: BrandService) {}
+  constructor(private readonly brandService: BrandService, private readonly brandFactory: BrandFactory) {}
 
   @Post()
-  create(@Body() createBrandDto: CreateBrandDto) {
-    return this.brandService.create(createBrandDto);
+  async create(@Body() createBrandDto: CreateBrandDto, @User() user: any) {
+    const brand = this.brandFactory.createBrand(createBrandDto, user);
+    const created = await this.brandService.create(brand as any);
+    return { success: true, message: 'Brand created successfully', data: created };
   }
 
   @Get()
-  findAll() {
-    return this.brandService.findAll();
+  async findAll() {
+    return await this.brandService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.brandService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.brandService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto) {
-    return this.brandService.update(+id, updateBrandDto);
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto) {
+    const updated = await this.brandService.update(id, updateBrandDto);
+    return { success: true, message: 'Brand updated successfully', data: updated };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.brandService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.brandService.remove(id);
   }
 }
